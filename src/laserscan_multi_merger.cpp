@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <string.h>
+#include <unistd.h>
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 #include <laser_geometry/laser_geometry.h>
@@ -70,8 +71,10 @@ void LaserscanMerger::reconfigureCallback(laserscan_multi_mergerConfig &config, 
 
 void LaserscanMerger::laserscan_topic_parser()
 {
-	// LaserScan topics to subscribe
+	// LaserScan topics to subscribed
 	ros::master::V_TopicInfo topics;
+	// Wait for publishing the topics
+	sleep(3);
 	ros::master::getTopics(topics);
 
     istringstream iss(laserscan_topics);
@@ -94,8 +97,7 @@ void LaserscanMerger::laserscan_topic_parser()
 	sort(tmp_input_topics.begin(),tmp_input_topics.end());
 	std::vector<string>::iterator last = std::unique(tmp_input_topics.begin(), tmp_input_topics.end());
 	tmp_input_topics.erase(last, tmp_input_topics.end());
-
-
+	
 	// Do not re-subscribe if the topics are the same
 	if( (tmp_input_topics.size() != input_topics.size()) || !equal(tmp_input_topics.begin(),tmp_input_topics.end(),input_topics.begin()))
 	{
